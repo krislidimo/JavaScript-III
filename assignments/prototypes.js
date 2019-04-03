@@ -23,7 +23,7 @@ function GameObject(obj) {
 };
 
 GameObject.prototype.destroy = function(){
-  return`${this.name} was removed from the game.`;
+  return `${this.name} was removed from the game.`;
 };
 
 /*
@@ -54,18 +54,17 @@ CharacterStats.prototype.takeDamage = function () {
 */
  
 function Humanoid(obj) {
-  GameObject.call(this, obj);
   CharacterStats.call(this, obj);
   this.team = obj.team;
   this.weapons = obj.weapons;
   this.language = obj.language;
 };
 
-Humanoid.prototype = Object.create(GameObject.prototype);
 Humanoid.prototype = Object.create(CharacterStats.prototype);
 Humanoid.prototype.greet = function () {
   return `${this.name} offers a greeting in ${this.language}`;
 };
+
 
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
@@ -145,3 +144,92 @@ Humanoid.prototype.greet = function () {
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
 
   
+
+  function Villain(obj) {
+    GameObject.call(this, obj);
+    Humanoid.call(this, obj);
+  }
+
+  Villain.prototype = Object.create(Humanoid.prototype);
+
+  Villain.prototype.attack = function (target) {
+    target.healthPoints -= 1;
+    console.log(`${this.name} attacks ${target.name}.`);
+    target.healthCheck();
+  }
+
+  Villain.prototype.hellFire = function (target) {
+    target.healthPoints -= 6;
+    console.log(`${this.name} casts Hell Fire on ${target.name}!`);
+    target.healthCheck();
+  }
+
+  function Hero(obj) {
+    Humanoid.call(this, obj);
+  }
+
+  Hero.prototype = Object.create(Humanoid.prototype);
+
+  Hero.prototype.attack = function (target) {
+    target.healthPoints -= 1;
+    console.log(`${this.name}'s attacks ${target.name}.`);
+    target.healthCheck();
+  }
+
+  Hero.prototype.spinToWin = function (target) {
+    target.healthPoints -= 20;
+    console.log(`${this.name}'s attacks ${target.name} with Spin To Win!`);
+    target.healthCheck();
+  }
+
+  Humanoid.prototype.healthCheck = function () {
+    if (this.healthPoints <= 0) {
+      console.log(`${this.name}'s Health: 0`);
+      console.log(this.destroy());
+    } else {
+      console.log(`${this.name}'s Health: ${this.healthPoints}`);
+    }
+  };
+
+  let evilDude = new Villain({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 6,
+    },
+    healthPoints: 20,
+    name: 'Evil Dude',
+    team: 'Bad Guys',
+    weapons: [
+      'Evil Sword',
+      'Evil Magic Spell',
+    ],
+    language: 'Evil Language',
+  });
+
+  let jimbo = new Hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 4,
+    },
+    healthPoints: 10,
+    name: 'Jimbo',
+    team: 'Good Guys',
+    weapons: [
+      'Super Awesome Sword',
+      'Super Awesome Dagger',
+    ],
+    language: 'English',
+  });
+
+
+  jimbo.attack(evilDude);
+  evilDude.attack(jimbo);
+  jimbo.attack(evilDude);
+  evilDude.attack(jimbo);
+  jimbo.attack(evilDude);
+  evilDude.hellFire(jimbo);
+  jimbo.spinToWin(evilDude);
